@@ -53,7 +53,7 @@ void *philosopher(void *arg)
 		pthread_mutex_unlock(data->lock);
 
 		// Handle philosopher becoming hungry
-		i_am_hungry(data, philo, id);
+		i_am_hungry(philo, id);
 
 
 		// Check if philosopher's state is still hungry (H) and fork state is correct
@@ -62,27 +62,6 @@ void *philosopher(void *arg)
 		{
 			printf("%s Philosopher %d Error -- state should be H, but it's %c\n",
 			(char *)phil_time(data), id, data->phil_states[id]);
-			pthread_mutex_unlock(data->lock);
-			exit(1);
-		}
-		pthread_mutex_unlock(data->lock);
-
-		pthread_mutex_lock(data->lock);
-		if (data->fork_states[id] != id)
-		{
-			printf("%s Philosopher %d Error -- fork %d state should be %d, but it is %d.\n",
-			(char *)phil_time(data), id, id, id, data->fork_states[id]);
-			pthread_mutex_unlock(data->lock);
-			exit(1);
-		}
-		pthread_mutex_unlock(data->lock);
-
-		// Get philosopher's food (fork) and start eating
-		pthread_mutex_lock(data->lock);
-		if (data->fork_states[(id+1)%data->num] != id)
-		{
-			printf("%s Philosopher %d Error -- fork %d state should be %d, but it is %d.\n",
-			(char *)phil_time(data), id, (id+1)%data->num, id, data->fork_states[id]);
 			pthread_mutex_unlock(data->lock);
 			exit(1);
 		}
@@ -111,7 +90,7 @@ void *philosopher(void *arg)
 		usleep(eat * 1000);
 
 		// Notify that the philosopher has finished eating
-		i_am_done_eating(data, philo, id);
+		i_am_done_eating(philo, id);
 
 
 		pthread_mutex_lock(data->lock);
@@ -119,27 +98,6 @@ void *philosopher(void *arg)
 		{
 			printf("%s Philosopher %d Error -- state should be E, but it's %c\n",
 			(char *)phil_time(data), id, data->phil_states[id]);
-			pthread_mutex_unlock(data->lock);
-			exit(1);
-		}
-		pthread_mutex_unlock(data->lock);
-
-		pthread_mutex_lock(data->lock);
-		if (data->fork_states[id] == id)
-		{
-			printf("%s Philosopher %d Error -- fork %d state should not be %d, but it is.\n",
-			(char *)phil_time(data), id, id, id);
-			pthread_mutex_unlock(data->lock);
-			exit(1);
-		}
-		pthread_mutex_unlock(data->lock);
-
-		// Check the state of the other philosopher's fork
-		pthread_mutex_lock(data->lock);
-		if (data->fork_states[(id+1)%data->num] == id)
-		{
-			printf("%s Philosopher %d Error -- fork %d state should not be %d, but it is.\n",
-			(char *)phil_time(data), id, (id+1)%data->num, id);
 			pthread_mutex_unlock(data->lock);
 			exit(1);
 		}

@@ -60,12 +60,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Error: Failed to allocate memory for mutex lock.\n");
 		exit(1);
 	}
-	data->fork_states = malloc(data->num * sizeof(int));
-	if (!data->fork_states)
-	{
-		fprintf(stderr, "Error: Failed to allocate memory for fork_states.\n");
-		exit(1);
-	}
+
 
 	data->phil_states = malloc( data->num * sizeof(int));
 	if (!data->phil_states)
@@ -74,12 +69,6 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	data->fork_conds = malloc(data->num * sizeof(pthread_cond_t *));
-	if (!data->fork_conds)
-	{
-		fprintf(stderr, "Error: Failed to allocate memory for fork_conds.\n");
-		exit(1);
-	}
 
 
 	data->print_lock = malloc(data->num * sizeof(pthread_mutex_t));
@@ -109,16 +98,7 @@ int main(int argc, char **argv)
 	for (i = 0; i < data->num; i++)
 	{
 		ids[i] = i;
-		data->fork_states[i] = -1;
 		data->phil_states[i] = 'T';
-		data->fork_conds[i] = malloc(data->num * sizeof(pthread_cond_t));
-		if (!data->fork_conds[i])
-		{
-			fprintf(stderr, "Error: Failed to allocate memory for data->fork_conds[i].\n");
-			exit(1);
-		}
-
-		pthread_cond_init(data->fork_conds[i], NULL);
 		data->blocktime[i] = 0;
 		data->start_hungry[i] = 0;
 	}

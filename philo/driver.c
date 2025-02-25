@@ -1,7 +1,7 @@
 #include "philo.h"
 
 // Function to handle when a philosopher becomes hungry and wants to eat
-void i_am_hungry(t_data *data, t_philo *philo, int philosopher)
+void i_am_hungry(t_philo *philo, int philosopher)
 {
 	int left_philo, right_philo;
 
@@ -26,8 +26,8 @@ void i_am_hungry(t_data *data, t_philo *philo, int philosopher)
 	pthread_mutex_unlock(philo->lock);
 
 	// Pick up both forks before eating
-	pick_up_fork(data, philosopher, philosopher);
-	pick_up_fork(data,  philosopher, (philosopher + 1) % philo->num);
+	pick_up_fork(philo, philosopher, philosopher);
+	pick_up_fork(philo,  philosopher, (philosopher + 1) % philo->num);
 
 	// Mark the philosopher's state as eating by setting their queue number to a low sentinel value
 	pthread_mutex_lock(philo->lock);
@@ -36,7 +36,7 @@ void i_am_hungry(t_data *data, t_philo *philo, int philosopher)
 }
 
 // Function to handle when a philosopher finishes eating
-void i_am_done_eating(t_data *data, t_philo *philo, int philosopher)
+void i_am_done_eating( t_philo *philo, int philosopher)
 {
 	int left_philo, right_philo;
 
@@ -49,8 +49,8 @@ void i_am_done_eating(t_data *data, t_philo *philo, int philosopher)
 	printf("Philosopher %d: Finished eating, releasing forks\n", philosopher);
 
 	// Put down both forks after eating
-	put_down_fork(data, philosopher, philosopher);
-	put_down_fork(data, philosopher, (philosopher + 1) % philo->num);
+	put_down_fork(philo, philosopher, philosopher);
+	put_down_fork(philo, philosopher, (philosopher + 1) % philo->num);
 
 	// Reset the philosopher's queue number to a high sentinel value (indicating they are not hungry)
 	philo->philo_num[philosopher] = THINKING;
@@ -66,87 +66,36 @@ void i_am_done_eating(t_data *data, t_philo *philo, int philosopher)
 
 
 // Function to pick up a fork
-void pick_up_fork(t_data *data, int id, int fork)
+void pick_up_fork(t_philo *philo, int id, int fork)
 {
+	pthread_mutex_t *fork_lock;
 
-	pthread_mutex_lock(data->lock); // Lock the mutex to safely modify shared resources
+	fork_lock = (fork == id) ? philo->left_fork_lock[id] : philo->right_fork_lock[id];
+
 
 	// pthread_mutex_lock(data->print_lock);
 	printf("Philosopher %d: Trying to pick up fork %d\n", id, fork);
 	// pthread_mutex_unlock(data->print_lock);
 
-	// Check if philosopher is hungry (must be in 'H' state to pick up fork)
-	if (data->phil_states[id] != 'H')
-	{
-		printf("%s Error -- pick_up_fork(%d %d) called and philosopher's state is %c .\n",
-		phil_time(data), id, fork, data->phil_states[id]);
-		pthread_mutex_unlock(data->lock);
-		exit(1);
-	}
+	pthread_mutex_lock(fork_lock); // Lock the mutex to safely modify shared resources
 
-	// Wait until the fork is available (if not, block)
+	printf("Philosopher %d: Successfully picked up fork %d\n", id, fork);
 
-	while (data->fork_states[fork] != -1)
-	{
-
-		if (!data->fork_conds[fork])
-		{
-			fprintf(stderr, "Error: fork_conds[%d] is NULL.\n", fork);
-			pthread_mutex_unlock(data->lock);
-			exit(1);
-		}
-		pthread_cond_wait(data->fork_conds[fork], data->lock); // Wait for fork to be available
-	}
-
-	data->fork_states[fork] = id; // Assign fork to philosopher
-
-
-	// pthread_mutex_lock(data->print_lock);
-	printf("%s Philosopher %d Picked Up Fork %d\n", (char *)phil_time(data), id, fork);
 	fflush(stdout);
-	// pthread_mutex_unlock(data->print_lock);
 
-	pthread_mutex_unlock(data->lock); // Unlock the mutex
 }
 
 // Function to put down a fork
-void put_down_fork(t_data *data, int id, int fork)
+void put_down_fork(t_philo *philo, int id, int fork)
 {
-	pthread_mutex_lock(data->lock); // Lock the mutex to safely modify shared resources
+	pthread_mutex_t *fork_lock;
+	fork_lock = (fork == id) ? philo->left_fork_lock[id] : philo->right_fork_lock[id];
 
 	printf("Philosopher %d: Putting down fork %d\n", id, fork);
 
-	// Check if philosopher is eating (must be in 'E' state to put down fork)
-	if (data->phil_states[id] != 'E')
-	{
-		printf("%s Error -- put_down_fork(%d %d) called and philosopher's state is %c .\n",
-		phil_time(data), id, fork, data->phil_states[id]);
-		pthread_mutex_unlock(data->lock);
-		exit(1);
-	}
+	pthread_mutex_unlock(fork_lock); // Release the fork
 
-	// Ensure the philosopher is holding the fork
-	if (data->fork_states[fork] != id)
-	{
-		printf("%s Error -- put_down_fork(%d %d) called and fork state is %d .\n",
-		(char *)phil_time(data), id, fork, data->fork_states[fork]);
-		pthread_mutex_unlock(data->lock);
-		exit(1);
-	}
 
-	data->fork_states[fork] = -1;  // Mark fork as available
-
-	// Print debug message
-	// pthread_mutex_lock(data->print_lock);
-	printf("%s Philosopher %d Put Down Fork %d\n", phil_time(data), id, fork);
+	printf("Philosopher %d Released Fork %d\n", id, fork);
 	fflush(stdout);
-	// pthread_mutex_unlock(data->print_lock);
-
-	pthread_cond_signal(data->fork_conds[fork]); // Signal other threads waiting for the fork
-
-	// pthread_mutex_lock(data->print_lock);
-	printf("Philosopher %d: Signaled other philosophers for fork %d\n", id, fork);
-	// pthread_mutex_unlock(data->print_lock);
-
-	pthread_mutex_unlock(data->lock); // Unlock the mutex
 }

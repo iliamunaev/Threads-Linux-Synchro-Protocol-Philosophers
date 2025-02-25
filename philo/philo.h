@@ -25,8 +25,7 @@ typedef struct s_data
   int time_to_sleep;
   int sleep;    /* 'U' or 'S' */
   pthread_mutex_t *lock;
-  pthread_cond_t **fork_conds;
-  int *fork_states;
+
   int *phil_states;
 
   long t0;
@@ -58,11 +57,11 @@ int main(int argc, char **argv);
 void *philosopher(void *arg);
 char *phil_time(t_data *data);
 void *accounting_thread(void *arg);
-void pick_up_fork(t_data *data, int id, int fork);
-void put_down_fork(t_data *data, int id, int fork);
+void pick_up_fork(t_philo *philo, int id, int fork);
+void put_down_fork(t_philo *philo, int id, int fork);
 
 t_philo *initialize_philo(int phil_count);
-void i_am_hungry(t_data *data, t_philo *philo, int philosopher);
-void i_am_done_eating(t_data *data, t_philo *philo, int philosopher);
+void i_am_done_eating( t_philo *philo, int philosopher);
+void i_am_hungry(t_philo *philo, int philosopher);
 
 # endif
