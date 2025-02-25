@@ -50,7 +50,7 @@ typedef struct s_data
   int *phil_states;
 
   long t0;
-  double dt0;
+  long dt0;
 
   pthread_mutex_t *blocklock;
   double *blocktime;
@@ -76,6 +76,7 @@ typedef struct s_philo
 int main(int argc, char **argv);
 void *philosopher(void *arg);
 char *phil_time(t_data *data);
+// long phil_time(t_data *data);
 void *accounting_thread(void *arg);
 void pick_up_chopstick(t_data *data, int id, int stick);
 void put_down_chopstick(t_data *data, int id, int stick);

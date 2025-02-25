@@ -1,5 +1,3 @@
-
-
 #include "philo.h"
 
 // Function to handle when a philosopher becomes hungry and wants to eat
@@ -92,7 +90,7 @@ void pick_up_chopstick(t_data *data, int id, int stick)
 		if (data->print == 'Y')
 		{
 			pthread_mutex_lock(data->blocklock);
-			printf("%s Philosopher %d Blocking on Stick %d\n", phil_time(data), id, stick);
+			printf("%s Philosopher %d Blocking on Stick %d\n", (char *)phil_time(data), id, stick);
 			fflush(stdout);
 			pthread_mutex_unlock(data->blocklock);
 		}
@@ -111,7 +109,7 @@ void pick_up_chopstick(t_data *data, int id, int stick)
 	if (data->print == 'Y')
 	{
 		pthread_mutex_lock(data->blocklock);
-		printf("%s Philosopher %d Picked Up Stick %d\n", phil_time(data), id, stick);
+		printf("%s Philosopher %d Picked Up Stick %d\n", (char *)phil_time(data), id, stick);
 		fflush(stdout);
 		pthread_mutex_unlock(data->blocklock);
 	}
@@ -137,7 +135,7 @@ void put_down_chopstick(t_data *data, int id, int stick)
 	if (data->stick_states[stick] != id)
 	{
 		printf("%s Error -- put_down_chopstick(%d %d) called and chopstick state is %d .\n",
-		phil_time(data), id, stick, data->stick_states[stick]);
+		(char *)phil_time(data), id, stick, data->stick_states[stick]);
 		exit(1);
 	}
 

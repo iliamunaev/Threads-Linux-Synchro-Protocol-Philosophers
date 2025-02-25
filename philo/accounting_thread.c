@@ -33,7 +33,7 @@ void *accounting_thread(void *arg)
 		}
 		else
 		{
-			usleep(data->accounting_interval); // Or use usleep if not sleeping
+			usleep(data->accounting_interval + 1000); // Or use usleep if not sleeping
 		}
 		gettimeofday(&tv, NULL);
 		t = tv.tv_usec;

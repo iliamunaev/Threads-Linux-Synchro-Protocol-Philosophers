@@ -15,7 +15,7 @@ void *philosopher(void *arg)
 
 	free(args);  // Free the dynamically allocated memory for args
 
-    printf("Philosopher %d started.\n", id); // Debug print
+    // printf("Philosopher %d started.\n", id); // Debug print
 
 
 	int thinktime, eattime;
@@ -31,7 +31,7 @@ void *philosopher(void *arg)
 		if (data->print == 'Y')
 		{
 			pthread_mutex_lock(data->blocklock);
-			printf("%s Philosopher %d Thinking (%d)\n", phil_time(data), id, thinktime);
+			printf("%s Philosopher %d Thinking (%d)\n", (char *)phil_time(data), id, thinktime);
 			fflush(stdout);
 			pthread_mutex_unlock(data->blocklock);
 		}
@@ -39,7 +39,7 @@ void *philosopher(void *arg)
 
 		pthread_mutex_lock(data->lock);
 		if (data->sleep == 'U')
-			usleep(thinktime);
+			usleep(thinktime * 1000);
 		else
 			sleep(thinktime);
 		pthread_mutex_unlock(data->lock);
@@ -50,7 +50,7 @@ void *philosopher(void *arg)
 		if (data->print == 'Y')
 		{
 			pthread_mutex_lock(data->blocklock);
-			printf("%s Philosopher %d Hungry\n", phil_time(data), id);
+			printf("%s Philosopher %d Hungry\n", (char *)phil_time(data), id);
 			fflush(stdout);
 			pthread_mutex_unlock(data->blocklock);
 		}
@@ -75,7 +75,7 @@ void *philosopher(void *arg)
 		if (data->phil_states[id] != 'H')
 		{
 			printf("%s Philosopher %d Error -- state should be H, but it's %c\n",
-			phil_time(data), id, data->phil_states[id]);
+			(char *)phil_time(data), id, data->phil_states[id]);
 			pthread_mutex_unlock(data->lock);
 			exit(1);
 		}
@@ -85,7 +85,7 @@ void *philosopher(void *arg)
 		if (data->stick_states[id] != id)
 		{
 			printf("%s Philosopher %d Error -- stick %d state should be %d, but it is %d.\n",
-			phil_time(data), id, id, id, data->stick_states[id]);
+			(char *)phil_time(data), id, id, id, data->stick_states[id]);
 			pthread_mutex_unlock(data->lock);
 			exit(1);
 		}
@@ -96,7 +96,7 @@ void *philosopher(void *arg)
 		if (data->stick_states[(id+1)%data->num] != id)
 		{
 			printf("%s Philosopher %d Error -- stick %d state should be %d, but it is %d.\n",
-			phil_time(data), id, (id+1)%data->num, id, data->stick_states[id]);
+			(char *)phil_time(data), id, (id+1)%data->num, id, data->stick_states[id]);
 			pthread_mutex_unlock(data->lock);
 			exit(1);
 		}
@@ -119,7 +119,7 @@ void *philosopher(void *arg)
 		if (data->print == 'Y')
 		{
 			pthread_mutex_lock(data->blocklock);
-			printf("%s Philosopher %d Eating (%d)\n", phil_time(data), id, eattime);
+			printf("%s Philosopher %d Eating (%d)\n", (char *)phil_time(data), id, eattime);
 			fflush(stdout);
 			pthread_mutex_unlock(data->blocklock);
 		}
@@ -127,7 +127,7 @@ void *philosopher(void *arg)
 
 
 		if (data->sleep == 'U')
-			usleep(eattime);
+			usleep(eattime * 1000);
 		else
 			sleep(eattime);
 
@@ -139,7 +139,7 @@ void *philosopher(void *arg)
 		if (data->phil_states[id] != 'E')
 		{
 			printf("%s Philosopher %d Error -- state should be E, but it's %c\n",
-			phil_time(data), id, data->phil_states[id]);
+			(char *)phil_time(data), id, data->phil_states[id]);
 			pthread_mutex_unlock(data->lock);
 			exit(1);
 		}
@@ -149,7 +149,7 @@ void *philosopher(void *arg)
 		if (data->stick_states[id] == id)
 		{
 			printf("%s Philosopher %d Error -- stick %d state should not be %d, but it is.\n",
-			phil_time(data), id, id, id);
+			(char *)phil_time(data), id, id, id);
 			pthread_mutex_unlock(data->lock);
 			exit(1);
 		}
@@ -161,7 +161,7 @@ void *philosopher(void *arg)
 		if (data->stick_states[(id+1)%data->num] == id)
 		{
 			printf("%s Philosopher %d Error -- stick %d state should not be %d, but it is.\n",
-			phil_time(data), id, (id+1)%data->num, id);
+			(char *)phil_time(data), id, (id+1)%data->num, id);
 			pthread_mutex_unlock(data->lock);
 			exit(1);
 		}

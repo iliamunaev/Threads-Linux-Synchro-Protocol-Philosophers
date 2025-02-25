@@ -3,7 +3,7 @@
 // Function to display usage information
 void usage(char *s)
 {
-	fprintf(stderr, "usage: dphil num-philosophers max-think max-eat accounting-interval seed(-1=time(0)) sleep(u|s) print(y|n)\n");
+	fprintf(stderr, "usage: phil num-philosophers max-think max-eat accounting-interval seed(-1=time(0)) sleep(u|s) print(y|n)\n");
 	if (strlen(s) > 0) fprintf(stderr, "%s\n", s);
 	exit(1);
 }
@@ -127,11 +127,15 @@ int main(int argc, char **argv)
 	if (data->print == 'Y') printf("#-Philosophers: %d\n", data->num);
 	fflush(stdout);
 
-	data->t0 = time(0);
+	// data->t0 = time(0);
+	// gettimeofday(&tv, NULL);
+	// data->dt0 = tv.tv_usec;
+	// data->dt0 /= 1000000.0;
+	// data->dt0 += tv.tv_sec;
+
 	gettimeofday(&tv, NULL);
-	data->dt0 = tv.tv_usec;
-	data->dt0 /= 1000000.0;
-	data->dt0 += tv.tv_sec;
+	// Convert dt0 to milliseconds (store as long)
+	data->dt0 = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 
 	srandom(seed);
 
