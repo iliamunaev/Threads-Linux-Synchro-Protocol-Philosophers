@@ -127,12 +127,6 @@ int main(int argc, char **argv)
 	if (data->print == 'Y') printf("#-Philosophers: %d\n", data->num);
 	fflush(stdout);
 
-	// data->t0 = time(0);
-	// gettimeofday(&tv, NULL);
-	// data->dt0 = tv.tv_usec;
-	// data->dt0 /= 1000000.0;
-	// data->dt0 += tv.tv_sec;
-
 	gettimeofday(&tv, NULL);
 	// Convert dt0 to milliseconds (store as long)
 	data->dt0 = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
