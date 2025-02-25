@@ -24,7 +24,6 @@ typedef struct s_data
   int time_to_eat;
   int time_to_sleep;
   int sleep;    /* 'U' or 'S' */
-
   pthread_mutex_t *lock;
   pthread_cond_t **fork_conds;
   int *fork_states;
@@ -46,6 +45,9 @@ typedef struct s_philo
   int num;
   pthread_mutex_t *lock;
   pthread_cond_t **blocked_philosophers;
+  pthread_mutex_t *forks;
+  pthread_mutex_t **left_fork_lock;
+  pthread_mutex_t **right_fork_lock;
   int *philo_num;
   int counter;
 } t_philo;
