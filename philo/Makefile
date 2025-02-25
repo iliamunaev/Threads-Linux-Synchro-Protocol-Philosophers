@@ -6,14 +6,14 @@
 #    By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/24 22:30:56 by imunaev-          #+#    #+#              #
-#    Updated: 2025/02/25 09:48:08 by imunaev-         ###   ########.fr        #
+#    Updated: 2025/02/25 12:13:53 by imunaev-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -pthread #-g -fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror -pthread -g -fsanitize=thread
 
 
 SRC = $(wildcard *.c)

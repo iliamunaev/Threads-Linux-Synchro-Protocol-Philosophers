@@ -5,6 +5,8 @@ valgrind --tool=helgrind ./philo 5 400 200 600
 valgrind --tool=drd ./philo 5 400 200 600
 
 ## Philosophers visualizer
-https://nafuka11.github.io/philosophers-visualizer/ 
+https://nafuka11.github.io/philosophers-visualizer/
 
 timeout 10s
+
+TSAN_OPTIONS="suppressions=suppressions.txt" ./philo 
