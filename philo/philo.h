@@ -22,6 +22,7 @@ typedef struct s_data
   int num;
   int maxthink;
   int time_to_eat;
+  int time_to_sleep;
   int sleep;    /* 'U' or 'S' */
 
   pthread_mutex_t *lock;

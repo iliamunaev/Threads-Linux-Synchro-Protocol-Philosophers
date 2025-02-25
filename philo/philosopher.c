@@ -102,7 +102,10 @@ void *philosopher(void *arg)
 		fflush(stdout);
 		pthread_mutex_unlock(data->print_lock);
 
-		usleep(data->time_to_eat * 1000);
+		pthread_mutex_lock(data->lock);
+		int eat = data->time_to_eat;
+		pthread_mutex_unlock(data->lock);
+		usleep(eat * 1000);
 
 		// Notify that the philosopher has finished eating
 		i_am_done_eating(data, philo, id);
@@ -138,6 +141,17 @@ void *philosopher(void *arg)
 			exit(1);
 		}
 		pthread_mutex_unlock(data->lock);
+
+		pthread_mutex_lock(data->print_lock);
+		printf("%s Philosopher %d start Sleeping (%d ms.)\n", (char *)phil_time(data), id, data->time_to_sleep);
+		fflush(stdout);
+		pthread_mutex_unlock(data->print_lock);
+
+		pthread_mutex_lock(data->lock);
+		int sleep = data->time_to_sleep;
+		pthread_mutex_unlock(data->lock);
+
+		usleep(sleep * 1000);
 
 	}
 }

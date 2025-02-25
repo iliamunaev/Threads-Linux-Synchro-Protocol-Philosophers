@@ -3,7 +3,7 @@
 // Function to display usage information
 void usage(char *s)
 {
-	fprintf(stderr, "usage: phil num-philosophers max-think max-eat accounting-interval seed(-1=time(0))\n");
+	fprintf(stderr, "usage: phil num-philosophers max-think [time_to_eat] [time_to_sleep] accounting-interval seed(-1=time(0))\n");
 	if (strlen(s) > 0) fprintf(stderr, "%s\n", s);
 	exit(1);
 }
@@ -12,7 +12,7 @@ void usage(char *s)
 int main(int argc, char **argv)
 {
 	// Check if the number of arguments is correct
-	if (argc != 6)
+	if (argc != 7)
 		usage("");
 
 	int *ids;
@@ -31,8 +31,9 @@ int main(int argc, char **argv)
 	data->num = atoi(argv[1]); // Get the number of philosophers
 	data->maxthink = atoi(argv[2]); // Max thinking time
 	data->time_to_eat = atoi(argv[3]); // Max eating time
-	data->accounting_interval = atoi(argv[4]); // Accounting interval
-	sscanf(argv[5], "%ld", &seed); // Get the random seed from the command line
+	data->time_to_sleep = atoi(argv[4]); // Max eating time
+	data->accounting_interval = atoi(argv[5]); // Accounting interval
+	sscanf(argv[6], "%ld", &seed); // Get the random seed from the command line
 	if (seed == -1)
 		seed = time(0);  // Default seed if -1
 
