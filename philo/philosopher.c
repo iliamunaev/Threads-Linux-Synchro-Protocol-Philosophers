@@ -17,8 +17,7 @@ void *philosopher(void *arg)
 
     // printf("Philosopher %d started.\n", id); // Debug print
 
-
-	int thinktime, eattime;
+	int thinktime;
 	struct timeval tv;
 	double t;
 
@@ -28,7 +27,7 @@ void *philosopher(void *arg)
 		thinktime = random() % data->maxthink + 1;
 
 		pthread_mutex_lock(data->print_lock);
-		printf("%s Philosopher %d Thinking (%d)\n", (char *)phil_time(data), id, thinktime);
+		printf("%s Philosopher %d Thinking (%d ms.)\n", (char *)phil_time(data), id, thinktime);
 		fflush(stdout);
 		pthread_mutex_unlock(data->print_lock);
 
@@ -52,9 +51,9 @@ void *philosopher(void *arg)
 		data->start_hungry[id] = t; // Record the time when the philosopher becomes hungry
 		pthread_mutex_unlock(data->lock);
 
-		// pthread_mutex_lock(data->lock);
-		i_am_hungry(data, philo, id); // Handle philosopher becoming hungry
-		// pthread_mutex_unlock(data->lock);
+		// Handle philosopher becoming hungry
+		i_am_hungry(data, philo, id);
+
 
 		// Check if philosopher's state is still hungry (H) and chopstick state is correct
 		pthread_mutex_lock(data->lock);
@@ -98,20 +97,16 @@ void *philosopher(void *arg)
 		data->blocktime[id] += (t - data->start_hungry[id]); // Update the time spent eating
 		pthread_mutex_unlock(data->lock);
 
-		// Eating for a random amount of time
-		eattime = random() % data->maxeat + 1;
-
-
 		pthread_mutex_lock(data->print_lock);
-		printf("%s Philosopher %d Eating (%d)\n", (char *)phil_time(data), id, eattime);
+		printf("%s Philosopher %d start Eating (%d ms.)\n", (char *)phil_time(data), id, data->time_to_eat);
 		fflush(stdout);
 		pthread_mutex_unlock(data->print_lock);
 
-		usleep(eattime * 1000);
+		usleep(data->time_to_eat * 1000);
 
-		// pthread_mutex_lock(data->lock);
-		i_am_done_eating(data, philo, id); // Notify that the philosopher has finished eating
-		// pthread_mutex_unlock(data->lock);
+		// Notify that the philosopher has finished eating
+		i_am_done_eating(data, philo, id);
+
 
 		pthread_mutex_lock(data->lock);
 		if (data->phil_states[id] != 'E')
@@ -134,7 +129,6 @@ void *philosopher(void *arg)
 		pthread_mutex_unlock(data->lock);
 
 		// Check the state of the other philosopher's chopstick
-
 		pthread_mutex_lock(data->lock);
 		if (data->stick_states[(id+1)%data->num] == id)
 		{

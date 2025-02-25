@@ -17,11 +17,13 @@ t_philo *initialize_philo(int phil_count)
 
 	// Allocate and initialize mutex lock for thread synchronization
 	philo->lock = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+	
 	pthread_mutex_init(philo->lock, NULL);
 
 	// Allocate memory for philosopher condition variables and their queue numbers
 	philo->blocked_philosophers = (pthread_cond_t **) malloc(sizeof(pthread_cond_t *)*philo->num);
-	philo->phil_number = (int *) malloc(sizeof(int)*philo->num);
+
+	philo->philo_num = malloc(philo->num * sizeof(int));
 
 	// Initialize each philosopher's condition variable and queue number
 	for (i = 0; i < philo->num; i++)
@@ -33,7 +35,7 @@ t_philo *initialize_philo(int phil_count)
 			return NULL;
 		}
 		pthread_cond_init(philo->blocked_philosophers[i], NULL);
-		philo->phil_number[i] = HIGH_SENTINEL; // Initially, all philosophers have a high sentinel value
+		philo->philo_num[i] = THINKING; // Initially, all philosophers have a high sentinel value
 	}
 	return philo;
 }

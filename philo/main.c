@@ -30,13 +30,13 @@ int main(int argc, char **argv)
 	// PS = &P; // Set pointer to the global philosopher structure
 	data->num = atoi(argv[1]); // Get the number of philosophers
 	data->maxthink = atoi(argv[2]); // Max thinking time
-	data->maxeat = atoi(argv[3]); // Max eating time
+	data->time_to_eat = atoi(argv[3]); // Max eating time
 	data->accounting_interval = atoi(argv[4]); // Accounting interval
 	sscanf(argv[5], "%ld", &seed); // Get the random seed from the command line
 	if (seed == -1)
 		seed = time(0);  // Default seed if -1
 
-	if (data->num <= 0 || data->maxthink <= 0 || data->maxeat <= 0)
+	if (data->num <= 0 || data->maxthink <= 0 || data->time_to_eat <= 0)
 	{
 		usage("num-philosophers, max-think and max-eat all have to be greater than zero");
 	}
@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Error: Failed to allocate memory for ids.\n");
 		exit(1);
 	}
-	tids = (pthread_t *) malloc(sizeof(pthread_t) * data->num);
+	tids = malloc(data->num * sizeof(pthread_t));
 	if (!tids)
 	{
 		fprintf(stderr, "Error: Failed to allocate memory for tids.\n");

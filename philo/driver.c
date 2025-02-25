@@ -13,12 +13,12 @@ void i_am_hungry(t_data *data, t_philo *philo, int philosopher)
 	printf("Philosopher %d: Wants to eat, waiting for turn...\n", philosopher);
 
 	 // Assign the current philosopher a unique counter value
-	philo->phil_number[philosopher] = philo->counter;
+	philo->philo_num[philosopher] = philo->counter;
 	philo->counter++;
 
 	 // Wait if the philosopher's turn is too far ahead of the neighboring philosophers
-	while (philo->phil_number[philosopher] - philo->phil_number[left_philo] > THRESH * philo->num
-		|| philo->phil_number[philosopher] - philo->phil_number[right_philo] > THRESH * philo->num)
+	while (philo->philo_num[philosopher] - philo->philo_num[left_philo] > THRESHOLD * philo->num
+		|| philo->philo_num[philosopher] - philo->philo_num[right_philo] > THRESHOLD * philo->num)
 	{
 		pthread_cond_wait(philo->blocked_philosophers[philosopher], philo->lock);
 	}
@@ -29,7 +29,7 @@ void i_am_hungry(t_data *data, t_philo *philo, int philosopher)
 	pick_up_chopstick(data,  philosopher, (philosopher + 1) % philo->num);
 
 	// Mark the philosopher's state as eating by setting their queue number to a low sentinel value
-	philo->phil_number[philosopher] = LOW_SENTINEL - THRESH * philo->num;
+	philo->philo_num[philosopher] = EATING - THRESHOLD * philo->num;
 
 	pthread_mutex_unlock(philo->lock); // Unlock the mutex after acquiring chopsticks
 }
@@ -46,13 +46,13 @@ void i_am_done_eating(t_data *data, t_philo *philo, int philosopher)
 	pthread_mutex_lock(philo->lock); // Lock the mutex before modifying shared resources
 
 	printf("Philosopher %d: Finished eating, releasing sticks\n", philosopher);
-	
+
 	// Put down both chopsticks after eating
 	put_down_chopstick(data, philosopher, philosopher);
 	put_down_chopstick(data, philosopher, (philosopher + 1) % philo->num);
 
 	// Reset the philosopher's queue number to a high sentinel value (indicating they are not hungry)
-	philo->phil_number[philosopher] = HIGH_SENTINEL;
+	philo->philo_num[philosopher] = THINKING;
 
 	// Signal the left and right neighbors that chopsticks might be available
 	pthread_cond_signal(philo->blocked_philosophers[left_philo]);

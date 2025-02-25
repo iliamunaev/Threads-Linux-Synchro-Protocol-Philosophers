@@ -11,12 +11,17 @@
 #include <unistd.h>
 
 
+#define THINKING  (0x7fffffff) // Max integer value: represents thinking
+#define EATING    (-1)         // Eating is represented by -1 (lowest priority)
+#define THRESHOLD       (5)    // Defines starvation threshold
+// #define THRESHOLD (3)
+
 
 typedef struct s_data
 {
   int num;
   int maxthink;
-  int maxeat;
+  int time_to_eat;
   int sleep;    /* 'U' or 'S' */
 
   pthread_mutex_t *lock;
@@ -40,13 +45,11 @@ typedef struct s_philo
   int num;
   pthread_mutex_t *lock;
   pthread_cond_t **blocked_philosophers;
-  int *phil_number;
+  int *philo_num;
   int counter;
 } t_philo;
 
-#define HIGH_SENTINEL (0x7fffffff)
-#define LOW_SENTINEL (-1)
-#define THRESH (5)
+
 
 int main(int argc, char **argv);
 void *philosopher(void *arg);
