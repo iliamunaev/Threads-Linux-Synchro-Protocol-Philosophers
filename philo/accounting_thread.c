@@ -27,14 +27,9 @@ void *accounting_thread(void *arg)
 
 	while (1)
 	{
-		if (data->sleep == 'S')
-		{
-			sleep(data->accounting_interval); // Sleep for the specified interval
-		}
-		else
-		{
-			usleep(data->accounting_interval + 1000); // Or use usleep if not sleeping
-		}
+
+		usleep(data->accounting_interval + 1000); // Or use usleep if not sleeping
+
 		gettimeofday(&tv, NULL);
 		t = tv.tv_usec;
 		t /= 1000000.0;
@@ -47,7 +42,7 @@ void *accounting_thread(void *arg)
 			fprintf(stderr, "Error: print_lock is NULL in accounting_thread.\n");
 			return NULL;
 		}
-		
+
 		pthread_mutex_lock(data->print_lock); // Lock the mutex for safe access to shared data
 
 		for (i = 0; i < data->num; i++)

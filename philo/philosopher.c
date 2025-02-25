@@ -33,10 +33,7 @@ void *philosopher(void *arg)
 		pthread_mutex_unlock(data->print_lock);
 
 		pthread_mutex_lock(data->lock);
-		if (data->sleep == 'U')
-			usleep(thinktime * 1000);
-		else
-			sleep(thinktime);
+		usleep(thinktime * 1000);
 		pthread_mutex_unlock(data->lock);
 
 
@@ -110,10 +107,7 @@ void *philosopher(void *arg)
 		fflush(stdout);
 		pthread_mutex_unlock(data->print_lock);
 
-		if (data->sleep == 'U')
-			usleep(eattime * 1000);
-		else
-			sleep(eattime);
+		usleep(eattime * 1000);
 
 		// pthread_mutex_lock(data->lock);
 		i_am_done_eating(data, philo, id); // Notify that the philosopher has finished eating
