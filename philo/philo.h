@@ -1,14 +1,5 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   dphil.h                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/25 09:33:53 by imunaev-          #+#    #+#             */
-/*   Updated: 2025/02/25 09:38:57 by imunaev-         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+#ifndef PHILO_H
+# define PHILO_H
 
 #include <stdlib.h>
 #include <string.h>
@@ -64,3 +55,5 @@ extern void put_down_chopstick(int philosopher, int stick);
 extern void *initialize_v(int phil_count);
 extern void i_am_hungry(void *v, int philosopher);
 extern void i_am_done_eating(void *v, int philosopher);
+
+# endif

@@ -6,7 +6,7 @@
 #    By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/24 22:30:56 by imunaev-          #+#    #+#              #
-#    Updated: 2025/02/25 09:26:54 by imunaev-         ###   ########.fr        #
+#    Updated: 2025/02/25 09:48:08 by imunaev-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,7 +28,7 @@ $(NAME): $(OBJ)
 debug: CFLAGS += -g
 debug: re
 
-$(OBJ_DIR)/%.o: %.c dphil.h | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: %.c philo.h | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR):
