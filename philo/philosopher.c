@@ -31,10 +31,7 @@ void *philosopher(void *arg)
 		fflush(stdout);
 		pthread_mutex_unlock(data->print_lock);
 
-		pthread_mutex_lock(data->lock);
 		usleep(thinktime * 1000);
-		pthread_mutex_unlock(data->lock);
-
 
 		// Philosopher becomes hungry
 		pthread_mutex_lock(data->print_lock);
@@ -44,10 +41,14 @@ void *philosopher(void *arg)
 
 		pthread_mutex_lock(data->lock);
 		data->phil_states[id] = 'H'; // Set philosopher's state to hungry
+		pthread_mutex_unlock(data->lock);
+
 		gettimeofday(&tv, NULL);
 		t = tv.tv_usec;
 		t /= 1000000.0;
 		t += tv.tv_sec;
+
+		pthread_mutex_lock(data->lock);
 		data->start_hungry[id] = t; // Record the time when the philosopher becomes hungry
 		pthread_mutex_unlock(data->lock);
 
@@ -55,7 +56,7 @@ void *philosopher(void *arg)
 		i_am_hungry(data, philo, id);
 
 
-		// Check if philosopher's state is still hungry (H) and chopstick state is correct
+		// Check if philosopher's state is still hungry (H) and fork state is correct
 		pthread_mutex_lock(data->lock);
 		if (data->phil_states[id] != 'H')
 		{
@@ -67,21 +68,21 @@ void *philosopher(void *arg)
 		pthread_mutex_unlock(data->lock);
 
 		pthread_mutex_lock(data->lock);
-		if (data->stick_states[id] != id)
+		if (data->fork_states[id] != id)
 		{
-			printf("%s Philosopher %d Error -- stick %d state should be %d, but it is %d.\n",
-			(char *)phil_time(data), id, id, id, data->stick_states[id]);
+			printf("%s Philosopher %d Error -- fork %d state should be %d, but it is %d.\n",
+			(char *)phil_time(data), id, id, id, data->fork_states[id]);
 			pthread_mutex_unlock(data->lock);
 			exit(1);
 		}
 		pthread_mutex_unlock(data->lock);
 
-		// Get philosopher's food (stick) and start eating
+		// Get philosopher's food (fork) and start eating
 		pthread_mutex_lock(data->lock);
-		if (data->stick_states[(id+1)%data->num] != id)
+		if (data->fork_states[(id+1)%data->num] != id)
 		{
-			printf("%s Philosopher %d Error -- stick %d state should be %d, but it is %d.\n",
-			(char *)phil_time(data), id, (id+1)%data->num, id, data->stick_states[id]);
+			printf("%s Philosopher %d Error -- fork %d state should be %d, but it is %d.\n",
+			(char *)phil_time(data), id, (id+1)%data->num, id, data->fork_states[id]);
 			pthread_mutex_unlock(data->lock);
 			exit(1);
 		}
@@ -97,14 +98,16 @@ void *philosopher(void *arg)
 		data->blocktime[id] += (t - data->start_hungry[id]); // Update the time spent eating
 		pthread_mutex_unlock(data->lock);
 
-		pthread_mutex_lock(data->print_lock);
-		printf("%s Philosopher %d start Eating (%d ms.)\n", (char *)phil_time(data), id, data->time_to_eat);
-		fflush(stdout);
-		pthread_mutex_unlock(data->print_lock);
 
 		pthread_mutex_lock(data->lock);
 		int eat = data->time_to_eat;
 		pthread_mutex_unlock(data->lock);
+
+		pthread_mutex_lock(data->print_lock);
+		printf("%s Philosopher %d start Eating (%d ms.)\n", (char *)phil_time(data), id, eat);
+		fflush(stdout);
+		pthread_mutex_unlock(data->print_lock);
+
 		usleep(eat * 1000);
 
 		// Notify that the philosopher has finished eating
@@ -122,34 +125,35 @@ void *philosopher(void *arg)
 		pthread_mutex_unlock(data->lock);
 
 		pthread_mutex_lock(data->lock);
-		if (data->stick_states[id] == id)
+		if (data->fork_states[id] == id)
 		{
-			printf("%s Philosopher %d Error -- stick %d state should not be %d, but it is.\n",
+			printf("%s Philosopher %d Error -- fork %d state should not be %d, but it is.\n",
 			(char *)phil_time(data), id, id, id);
 			pthread_mutex_unlock(data->lock);
 			exit(1);
 		}
 		pthread_mutex_unlock(data->lock);
 
-		// Check the state of the other philosopher's chopstick
+		// Check the state of the other philosopher's fork
 		pthread_mutex_lock(data->lock);
-		if (data->stick_states[(id+1)%data->num] == id)
+		if (data->fork_states[(id+1)%data->num] == id)
 		{
-			printf("%s Philosopher %d Error -- stick %d state should not be %d, but it is.\n",
+			printf("%s Philosopher %d Error -- fork %d state should not be %d, but it is.\n",
 			(char *)phil_time(data), id, (id+1)%data->num, id);
 			pthread_mutex_unlock(data->lock);
 			exit(1);
 		}
 		pthread_mutex_unlock(data->lock);
 
-		pthread_mutex_lock(data->print_lock);
-		printf("%s Philosopher %d start Sleeping (%d ms.)\n", (char *)phil_time(data), id, data->time_to_sleep);
-		fflush(stdout);
-		pthread_mutex_unlock(data->print_lock);
 
 		pthread_mutex_lock(data->lock);
 		int sleep = data->time_to_sleep;
 		pthread_mutex_unlock(data->lock);
+
+		pthread_mutex_lock(data->print_lock);
+		printf("%s Philosopher %d start Sleeping (%d ms.)\n", (char *)phil_time(data), id, sleep);
+		fflush(stdout);
+		pthread_mutex_unlock(data->print_lock);
 
 		usleep(sleep * 1000);
 

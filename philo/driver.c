@@ -23,15 +23,16 @@ void i_am_hungry(t_data *data, t_philo *philo, int philosopher)
 		pthread_cond_wait(philo->blocked_philosophers[philosopher], philo->lock);
 	}
 	printf("Philosopher %d: Got permission to eat\n", philosopher);
+	pthread_mutex_unlock(philo->lock);
 
-	// Pick up both chopsticks before eating
-	pick_up_chopstick(data, philosopher, philosopher);
-	pick_up_chopstick(data,  philosopher, (philosopher + 1) % philo->num);
+	// Pick up both forks before eating
+	pick_up_fork(data, philosopher, philosopher);
+	pick_up_fork(data,  philosopher, (philosopher + 1) % philo->num);
 
 	// Mark the philosopher's state as eating by setting their queue number to a low sentinel value
+	pthread_mutex_lock(philo->lock);
 	philo->philo_num[philosopher] = EATING - THRESHOLD * philo->num;
-
-	pthread_mutex_unlock(philo->lock); // Unlock the mutex after acquiring chopsticks
+	pthread_mutex_unlock(philo->lock); // Unlock the mutex after acquiring forks
 }
 
 // Function to handle when a philosopher finishes eating
@@ -45,16 +46,16 @@ void i_am_done_eating(t_data *data, t_philo *philo, int philosopher)
 
 	pthread_mutex_lock(philo->lock); // Lock the mutex before modifying shared resources
 
-	printf("Philosopher %d: Finished eating, releasing sticks\n", philosopher);
+	printf("Philosopher %d: Finished eating, releasing forks\n", philosopher);
 
-	// Put down both chopsticks after eating
-	put_down_chopstick(data, philosopher, philosopher);
-	put_down_chopstick(data, philosopher, (philosopher + 1) % philo->num);
+	// Put down both forks after eating
+	put_down_fork(data, philosopher, philosopher);
+	put_down_fork(data, philosopher, (philosopher + 1) % philo->num);
 
 	// Reset the philosopher's queue number to a high sentinel value (indicating they are not hungry)
 	philo->philo_num[philosopher] = THINKING;
 
-	// Signal the left and right neighbors that chopsticks might be available
+	// Signal the left and right neighbors that forks might be available
 	pthread_cond_signal(philo->blocked_philosophers[left_philo]);
 	pthread_cond_signal(philo->blocked_philosophers[right_philo]);
 
@@ -64,90 +65,88 @@ void i_am_done_eating(t_data *data, t_philo *philo, int philosopher)
 #include "philo.h"
 
 
-// Function to pick up a chopstick
-void pick_up_chopstick(t_data *data, int id, int stick)
+// Function to pick up a fork
+void pick_up_fork(t_data *data, int id, int fork)
 {
 
 	pthread_mutex_lock(data->lock); // Lock the mutex to safely modify shared resources
 
-	if (!data || !data->phil_states)
-	{
-		fprintf(stderr, "Error: Invalid data pointer in pick_up_chopstick.\n");
-		exit(1);
-	}
+	// pthread_mutex_lock(data->print_lock);
+	printf("Philosopher %d: Trying to pick up fork %d\n", id, fork);
+	// pthread_mutex_unlock(data->print_lock);
 
-	printf("Philosopher %d: Trying to pick up stick %d\n", id, stick);
-	// Check if philosopher is hungry (must be in 'H' state to pick up chopstick)
+	// Check if philosopher is hungry (must be in 'H' state to pick up fork)
 	if (data->phil_states[id] != 'H')
 	{
-		printf("%s Error -- pick_up_chopstick(%d %d) called and philosopher's state is %c .\n",
-		phil_time(data), id, stick, data->phil_states[id]);
+		printf("%s Error -- pick_up_fork(%d %d) called and philosopher's state is %c .\n",
+		phil_time(data), id, fork, data->phil_states[id]);
+		pthread_mutex_unlock(data->lock);
 		exit(1);
 	}
 
-	// Wait until the chopstick is available (if not, block)
-	while (data->stick_states[stick] != -1)
+	// Wait until the fork is available (if not, block)
+
+	while (data->fork_states[fork] != -1)
 	{
 
-		pthread_mutex_lock(data->print_lock);
-		printf("%s Philosopher %d Blocking on Stick %d\n", (char *)phil_time(data), id, stick);
-		fflush(stdout);
-		pthread_mutex_unlock(data->print_lock);
-
-		if (!data->stick_conds[stick])
+		if (!data->fork_conds[fork])
 		{
-			fprintf(stderr, "Error: stick_conds[%d] is NULL.\n", stick);
+			fprintf(stderr, "Error: fork_conds[%d] is NULL.\n", fork);
+			pthread_mutex_unlock(data->lock);
 			exit(1);
 		}
-		pthread_cond_wait(data->stick_conds[stick], data->lock); // Wait for chopstick to be available
+		pthread_cond_wait(data->fork_conds[fork], data->lock); // Wait for fork to be available
 	}
 
-	data->stick_states[stick] = id; // Assign chopstick to philosopher
+	data->fork_states[fork] = id; // Assign fork to philosopher
 
-	printf("Philosopher %d: Picked up stick %d\n", id, stick);
-	// Print debug message if enabled
 
-	pthread_mutex_lock(data->print_lock);
-	printf("%s Philosopher %d Picked Up Stick %d\n", (char *)phil_time(data), id, stick);
+	// pthread_mutex_lock(data->print_lock);
+	printf("%s Philosopher %d Picked Up Fork %d\n", (char *)phil_time(data), id, fork);
 	fflush(stdout);
-	pthread_mutex_unlock(data->print_lock);
-
+	// pthread_mutex_unlock(data->print_lock);
 
 	pthread_mutex_unlock(data->lock); // Unlock the mutex
 }
 
-// Function to put down a chopstick
-void put_down_chopstick(t_data *data, int id, int stick)
+// Function to put down a fork
+void put_down_fork(t_data *data, int id, int fork)
 {
 	pthread_mutex_lock(data->lock); // Lock the mutex to safely modify shared resources
 
-	printf("Philosopher %d: Putting down stick %d\n", id, stick);
-	// Check if philosopher is eating (must be in 'E' state to put down chopstick)
+	printf("Philosopher %d: Putting down fork %d\n", id, fork);
+
+	// Check if philosopher is eating (must be in 'E' state to put down fork)
 	if (data->phil_states[id] != 'E')
 	{
-		printf("%s Error -- put_down_chopstick(%d %d) called and philosopher's state is %c .\n",
-		phil_time(data), id, stick, data->phil_states[id]);
+		printf("%s Error -- put_down_fork(%d %d) called and philosopher's state is %c .\n",
+		phil_time(data), id, fork, data->phil_states[id]);
+		pthread_mutex_unlock(data->lock);
 		exit(1);
 	}
 
-	// Ensure the philosopher is holding the chopstick
-	if (data->stick_states[stick] != id)
+	// Ensure the philosopher is holding the fork
+	if (data->fork_states[fork] != id)
 	{
-		printf("%s Error -- put_down_chopstick(%d %d) called and chopstick state is %d .\n",
-		(char *)phil_time(data), id, stick, data->stick_states[stick]);
+		printf("%s Error -- put_down_fork(%d %d) called and fork state is %d .\n",
+		(char *)phil_time(data), id, fork, data->fork_states[fork]);
+		pthread_mutex_unlock(data->lock);
 		exit(1);
 	}
 
-	data->stick_states[stick] = -1;  // Mark chopstick as available
+	data->fork_states[fork] = -1;  // Mark fork as available
 
 	// Print debug message
-	pthread_mutex_lock(data->print_lock);
-	printf("%s Philosopher %d Put Down Stick %d\n", phil_time(data), id, stick);
+	// pthread_mutex_lock(data->print_lock);
+	printf("%s Philosopher %d Put Down Fork %d\n", phil_time(data), id, fork);
 	fflush(stdout);
-	pthread_mutex_unlock(data->print_lock);
+	// pthread_mutex_unlock(data->print_lock);
 
-	pthread_cond_signal(data->stick_conds[stick]); // Signal other threads waiting for the chopstick
+	pthread_cond_signal(data->fork_conds[fork]); // Signal other threads waiting for the fork
 
-	printf("Philosopher %d: Signaled other philosophers for stick %d\n", id, stick);
+	// pthread_mutex_lock(data->print_lock);
+	printf("Philosopher %d: Signaled other philosophers for fork %d\n", id, fork);
+	// pthread_mutex_unlock(data->print_lock);
+
 	pthread_mutex_unlock(data->lock); // Unlock the mutex
 }

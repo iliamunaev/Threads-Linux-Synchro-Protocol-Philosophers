@@ -60,10 +60,10 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Error: Failed to allocate memory for mutex lock.\n");
 		exit(1);
 	}
-	data->stick_states = malloc(data->num * sizeof(int));
-	if (!data->stick_states)
+	data->fork_states = malloc(data->num * sizeof(int));
+	if (!data->fork_states)
 	{
-		fprintf(stderr, "Error: Failed to allocate memory for stick_states.\n");
+		fprintf(stderr, "Error: Failed to allocate memory for fork_states.\n");
 		exit(1);
 	}
 
@@ -74,10 +74,10 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	data->stick_conds = malloc(data->num * sizeof(pthread_cond_t *));
-	if (!data->stick_conds)
+	data->fork_conds = malloc(data->num * sizeof(pthread_cond_t *));
+	if (!data->fork_conds)
 	{
-		fprintf(stderr, "Error: Failed to allocate memory for stick_conds.\n");
+		fprintf(stderr, "Error: Failed to allocate memory for fork_conds.\n");
 		exit(1);
 	}
 
@@ -109,16 +109,16 @@ int main(int argc, char **argv)
 	for (i = 0; i < data->num; i++)
 	{
 		ids[i] = i;
-		data->stick_states[i] = -1;
+		data->fork_states[i] = -1;
 		data->phil_states[i] = 'T';
-		data->stick_conds[i] = malloc(data->num * sizeof(pthread_cond_t));
-		if (!data->stick_conds[i])
+		data->fork_conds[i] = malloc(data->num * sizeof(pthread_cond_t));
+		if (!data->fork_conds[i])
 		{
-			fprintf(stderr, "Error: Failed to allocate memory for data->stick_conds[i].\n");
+			fprintf(stderr, "Error: Failed to allocate memory for data->fork_conds[i].\n");
 			exit(1);
 		}
 
-		pthread_cond_init(data->stick_conds[i], NULL);
+		pthread_cond_init(data->fork_conds[i], NULL);
 		data->blocktime[i] = 0;
 		data->start_hungry[i] = 0;
 	}
