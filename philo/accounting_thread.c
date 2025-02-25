@@ -47,6 +47,7 @@ void *accounting_thread(void *arg)
 			fprintf(stderr, "Error: print_lock is NULL in accounting_thread.\n");
 			return NULL;
 		}
+		
 		pthread_mutex_lock(data->print_lock); // Lock the mutex for safe access to shared data
 
 		for (i = 0; i < data->num; i++)

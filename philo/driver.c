@@ -10,8 +10,8 @@ void i_am_hungry(t_data *data, t_philo *philo, int philosopher)
 	right_philo = (philosopher + 1) % philo->num;
 
 	pthread_mutex_lock(philo->lock); // Lock the mutex to ensure thread-safe operations
-
 	printf("Philosopher %d: Wants to eat, waiting for turn...\n", philosopher);
+
 	 // Assign the current philosopher a unique counter value
 	philo->phil_number[philosopher] = philo->counter;
 	philo->counter++;
@@ -46,6 +46,7 @@ void i_am_done_eating(t_data *data, t_philo *philo, int philosopher)
 	pthread_mutex_lock(philo->lock); // Lock the mutex before modifying shared resources
 
 	printf("Philosopher %d: Finished eating, releasing sticks\n", philosopher);
+	
 	// Put down both chopsticks after eating
 	put_down_chopstick(data, philosopher, philosopher);
 	put_down_chopstick(data, philosopher, (philosopher + 1) % philo->num);
