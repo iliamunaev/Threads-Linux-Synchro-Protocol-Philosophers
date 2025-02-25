@@ -6,15 +6,16 @@
 #    By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/24 22:30:56 by imunaev-          #+#    #+#              #
-#    Updated: 2025/02/25 20:00:19 by imunaev-         ###   ########.fr        #
+#    Updated: 2025/02/25 22:26:25 by imunaev-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -pthread -g #-fsanitize=thread
-
+CFLAGS = -Wall -Wextra -Werror -pthread -g -fsanitize=thread
+# -fsanitize=address
+# -fsanitize=thread
 
 SRC = $(wildcard *.c)
 OBJ_DIR = obj

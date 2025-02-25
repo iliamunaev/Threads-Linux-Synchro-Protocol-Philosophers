@@ -16,7 +16,8 @@ int main(int argc, char **argv)
 		usage("");
 
 	int *ids;
-	pthread_t *tids, atid;
+	pthread_t *tids;
+	// pthread_t *atid;
 	int i;
 	long seed;
 	struct timeval tv;
@@ -103,23 +104,20 @@ int main(int argc, char **argv)
 		data->start_hungry[i] = 0;
 	}
 
-	printf("#-Philosophers: %d\n", data->num);
-	fflush(stdout);
-
 	gettimeofday(&tv, NULL);
 	data->dt0 = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 
 	srandom(seed);
 
-	if (data->accounting_interval > 0)
-	{
-		if (pthread_create(&atid, NULL, accounting_thread, (void *) data) != 0)
-		{
-			fprintf(stderr, "Error: Failed to create accounting thread.\n");
-			exit(1);
-		}
-		pthread_detach(atid);
-	}
+	// if (data->accounting_interval > 0)
+	// {
+	// 	if (pthread_create(&atid, NULL, accounting_thread, (void *) data) != 0)
+	// 	{
+	// 		fprintf(stderr, "Error: Failed to create accounting thread.\n");
+	// 		exit(1);
+	// 	}
+	// 	pthread_detach(atid);
+	// }
 
 	data->v = initialize_philo(data->num);
 	if (!data->v)

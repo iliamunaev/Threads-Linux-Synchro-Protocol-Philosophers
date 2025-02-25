@@ -49,8 +49,8 @@ t_philo *initialize_philo(int phil_count)
 
     init_forks(philo->forks, phil_count); // Initialize fork mutexes
 
-	philo->left_fork_lock = malloc(sizeof(pthread_mutex_t *));
-	philo->right_fork_lock = malloc(sizeof(pthread_mutex_t *));
+	philo->left_fork_lock = malloc(phil_count * sizeof(pthread_mutex_t *));
+	philo->right_fork_lock = malloc(phil_count * sizeof(pthread_mutex_t *));
     if (!philo->left_fork_lock || !philo->right_fork_lock) {
         fprintf(stderr, "Error: fork lock malloc failed\n");
         exit(EXIT_FAILURE);
