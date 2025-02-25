@@ -3,7 +3,7 @@
 // Function to display usage information
 void usage(char *s)
 {
-	fprintf(stderr, "usage: phil num-philosophers max-think max-eat accounting-interval seed(-1=time(0)) sleep(u|s) print(y|n)\n");
+	fprintf(stderr, "usage: phil num-philosophers max-think max-eat accounting-interval seed(-1=time(0)) sleep(u|s)\n");
 	if (strlen(s) > 0) fprintf(stderr, "%s\n", s);
 	exit(1);
 }
@@ -12,7 +12,7 @@ void usage(char *s)
 int main(int argc, char **argv)
 {
 	// Check if the number of arguments is correct
-	if (argc != 8)
+	if (argc != 7)
 		usage("");
 
 	int *ids;
@@ -36,7 +36,6 @@ int main(int argc, char **argv)
 	if (seed == -1)
 		seed = time(0);  // Default seed if -1
 	data->sleep = (argv[6][0] == 'u') ? 'U' : 'S'; // Set sleep mode (microseconds or seconds)
-	data->print = (argv[7][0] == 'y') ? 'Y' : 'N'; // Enable or disable printing
 
 	if (data->num <= 0 || data->maxthink <= 0 || data->maxeat <= 0)
 	{
@@ -83,10 +82,10 @@ int main(int argc, char **argv)
 	}
 
 
-	data->blocklock = malloc(data->num * sizeof(pthread_mutex_t));
-	if (!data->blocklock)
+	data->print_lock = malloc(data->num * sizeof(pthread_mutex_t));
+	if (!data->print_lock)
 	{
-		fprintf(stderr, "Error: Failed to allocate memory for blocklock.\n");
+		fprintf(stderr, "Error: Failed to allocate memory for print_lock.\n");
 		exit(1);
 	}
 
@@ -105,7 +104,7 @@ int main(int argc, char **argv)
 	}
 
 	pthread_mutex_init(data->lock, NULL);
-	pthread_mutex_init(data->blocklock, NULL);
+	pthread_mutex_init(data->print_lock, NULL);
 
 	for (i = 0; i < data->num; i++)
 	{
@@ -124,11 +123,10 @@ int main(int argc, char **argv)
 		data->start_hungry[i] = 0;
 	}
 
-	if (data->print == 'Y') printf("#-Philosophers: %d\n", data->num);
+	printf("#-Philosophers: %d\n", data->num);
 	fflush(stdout);
 
 	gettimeofday(&tv, NULL);
-	// Convert dt0 to milliseconds (store as long)
 	data->dt0 = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 
 	srandom(seed);

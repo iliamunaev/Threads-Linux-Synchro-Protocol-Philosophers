@@ -11,30 +11,6 @@
 #include <unistd.h>
 
 
-// struct phil
-// {
-//   int num;
-//   int maxthink;
-//   int maxeat;
-//   int sleep;    /* 'U' or 'S' */
-//   int print;    /* 'Y' or 'N' */
-
-//   pthread_mutex_t *lock;
-//   pthread_cond_t **stick_conds;
-//   int *stick_states;
-//   int *phil_states;
-
-//   long t0;
-//   double dt0;
-
-//   pthread_mutex_t *blocklock;
-//   double *blocktime;
-//   double *start_hungry;
-//   int accounting_interval;
-
-//   void *v;
-// };
-
 
 typedef struct s_data
 {
@@ -42,7 +18,6 @@ typedef struct s_data
   int maxthink;
   int maxeat;
   int sleep;    /* 'U' or 'S' */
-  int print;    /* 'Y' or 'N' */
 
   pthread_mutex_t *lock;
   pthread_cond_t **stick_conds;
@@ -52,7 +27,7 @@ typedef struct s_data
   long t0;
   long dt0;
 
-  pthread_mutex_t *blocklock;
+  pthread_mutex_t *print_lock;
   double *blocktime;
   double *start_hungry;
   int accounting_interval;

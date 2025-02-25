@@ -42,12 +42,12 @@ void *accounting_thread(void *arg)
 
 		tblock = 0;
 
-		if (!data->blocklock)
+		if (!data->print_lock)
 		{
-			fprintf(stderr, "Error: blocklock is NULL in accounting_thread.\n");
+			fprintf(stderr, "Error: print_lock is NULL in accounting_thread.\n");
 			return NULL;
 		}
-		pthread_mutex_lock(data->blocklock); // Lock the mutex for safe access to shared data
+		pthread_mutex_lock(data->print_lock); // Lock the mutex for safe access to shared data
 
 		for (i = 0; i < data->num; i++)
 		{
@@ -65,7 +65,7 @@ void *accounting_thread(void *arg)
 
 		printf("\n");
 		fflush(stdout); // Ensure output is written to console immediately
-		pthread_mutex_unlock(data->blocklock);
+		pthread_mutex_unlock(data->print_lock);
 	}
 
 	return NULL;

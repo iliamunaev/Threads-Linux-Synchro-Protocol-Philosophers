@@ -87,13 +87,12 @@ void pick_up_chopstick(t_data *data, int id, int stick)
 	// Wait until the chopstick is available (if not, block)
 	while (data->stick_states[stick] != -1)
 	{
-		if (data->print == 'Y')
-		{
-			pthread_mutex_lock(data->blocklock);
-			printf("%s Philosopher %d Blocking on Stick %d\n", (char *)phil_time(data), id, stick);
-			fflush(stdout);
-			pthread_mutex_unlock(data->blocklock);
-		}
+
+		pthread_mutex_lock(data->print_lock);
+		printf("%s Philosopher %d Blocking on Stick %d\n", (char *)phil_time(data), id, stick);
+		fflush(stdout);
+		pthread_mutex_unlock(data->print_lock);
+
 		if (!data->stick_conds[stick])
 		{
 			fprintf(stderr, "Error: stick_conds[%d] is NULL.\n", stick);
@@ -106,13 +105,12 @@ void pick_up_chopstick(t_data *data, int id, int stick)
 
 	printf("Philosopher %d: Picked up stick %d\n", id, stick);
 	// Print debug message if enabled
-	if (data->print == 'Y')
-	{
-		pthread_mutex_lock(data->blocklock);
-		printf("%s Philosopher %d Picked Up Stick %d\n", (char *)phil_time(data), id, stick);
-		fflush(stdout);
-		pthread_mutex_unlock(data->blocklock);
-	}
+
+	pthread_mutex_lock(data->print_lock);
+	printf("%s Philosopher %d Picked Up Stick %d\n", (char *)phil_time(data), id, stick);
+	fflush(stdout);
+	pthread_mutex_unlock(data->print_lock);
+
 
 	pthread_mutex_unlock(data->lock); // Unlock the mutex
 }
@@ -141,14 +139,12 @@ void put_down_chopstick(t_data *data, int id, int stick)
 
 	data->stick_states[stick] = -1;  // Mark chopstick as available
 
-	// Print debug message if enabled
-	if (data->print == 'Y')
-	{
-		pthread_mutex_lock(data->blocklock);
-		printf("%s Philosopher %d Put Down Stick %d\n", phil_time(data), id, stick);
-		fflush(stdout);
-		pthread_mutex_unlock(data->blocklock);
-	}
+	// Print debug message
+	pthread_mutex_lock(data->print_lock);
+	printf("%s Philosopher %d Put Down Stick %d\n", phil_time(data), id, stick);
+	fflush(stdout);
+	pthread_mutex_unlock(data->print_lock);
+
 	pthread_cond_signal(data->stick_conds[stick]); // Signal other threads waiting for the chopstick
 
 	printf("Philosopher %d: Signaled other philosophers for stick %d\n", id, stick);

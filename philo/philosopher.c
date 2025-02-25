@@ -27,15 +27,10 @@ void *philosopher(void *arg)
 		// Philosopher thinks for a random amount of time
 		thinktime = random() % data->maxthink + 1;
 
-		pthread_mutex_lock(data->lock);
-		if (data->print == 'Y')
-		{
-			pthread_mutex_lock(data->blocklock);
-			printf("%s Philosopher %d Thinking (%d)\n", (char *)phil_time(data), id, thinktime);
-			fflush(stdout);
-			pthread_mutex_unlock(data->blocklock);
-		}
-		pthread_mutex_unlock(data->lock);
+		pthread_mutex_lock(data->print_lock);
+		printf("%s Philosopher %d Thinking (%d)\n", (char *)phil_time(data), id, thinktime);
+		fflush(stdout);
+		pthread_mutex_unlock(data->print_lock);
 
 		pthread_mutex_lock(data->lock);
 		if (data->sleep == 'U')
@@ -46,16 +41,10 @@ void *philosopher(void *arg)
 
 
 		// Philosopher becomes hungry
-		pthread_mutex_lock(data->lock);
-		if (data->print == 'Y')
-		{
-			pthread_mutex_lock(data->blocklock);
-			printf("%s Philosopher %d Hungry\n", (char *)phil_time(data), id);
-			fflush(stdout);
-			pthread_mutex_unlock(data->blocklock);
-		}
-		pthread_mutex_unlock(data->lock);
-
+		pthread_mutex_lock(data->print_lock);
+		printf("%s Philosopher %d Hungry\n", (char *)phil_time(data), id);
+		fflush(stdout);
+		pthread_mutex_unlock(data->print_lock);
 
 		pthread_mutex_lock(data->lock);
 		data->phil_states[id] = 'H'; // Set philosopher's state to hungry
@@ -115,16 +104,11 @@ void *philosopher(void *arg)
 		// Eating for a random amount of time
 		eattime = random() % data->maxeat + 1;
 
-		pthread_mutex_lock(data->lock);
-		if (data->print == 'Y')
-		{
-			pthread_mutex_lock(data->blocklock);
-			printf("%s Philosopher %d Eating (%d)\n", (char *)phil_time(data), id, eattime);
-			fflush(stdout);
-			pthread_mutex_unlock(data->blocklock);
-		}
-		pthread_mutex_unlock(data->lock);
 
+		pthread_mutex_lock(data->print_lock);
+		printf("%s Philosopher %d Eating (%d)\n", (char *)phil_time(data), id, eattime);
+		fflush(stdout);
+		pthread_mutex_unlock(data->print_lock);
 
 		if (data->sleep == 'U')
 			usleep(eattime * 1000);

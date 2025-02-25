@@ -3,7 +3,8 @@
 // Function to return the time in milliseconds as a formatted string
 char *phil_time(t_data *data)
 {
-    static char buf[100];
+    // static char buf[100];
+    static __thread char buf[100];
     struct timeval tv;
     long t, relative_time;
 
