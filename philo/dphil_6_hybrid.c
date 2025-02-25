@@ -6,13 +6,12 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 09:33:51 by imunaev-          #+#    #+#             */
-/*   Updated: 2025/02/25 09:33:52 by imunaev-         ###   ########.fr       */
+/*   Updated: 2025/02/25 09:39:01 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "dphil.h"
-
 
 void *initialize_v(int phil_count)
 {

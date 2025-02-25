@@ -6,11 +6,12 @@
 /*   By: imunaev- <imunaev-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 09:33:39 by imunaev-          #+#    #+#             */
-/*   Updated: 2025/02/25 09:33:47 by imunaev-         ###   ########.fr       */
+/*   Updated: 2025/02/25 09:39:04 by imunaev-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "dphil.h"
+
 
 struct phil P;
 struct phil *PS;
