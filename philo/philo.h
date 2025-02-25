@@ -44,9 +44,8 @@ typedef struct s_philo
   int num;
   pthread_mutex_t *lock;
   pthread_cond_t **blocked_philosophers;
-  pthread_mutex_t *forks;
-  pthread_mutex_t **left_fork_lock;
-  pthread_mutex_t **right_fork_lock;
+  pthread_mutex_t *forks_lock;
+
   int *philo_num;
   int counter;
 } t_philo;
@@ -57,8 +56,8 @@ int main(int argc, char **argv);
 void *philosopher(void *arg);
 char *phil_time(t_data *data);
 void *accounting_thread(void *arg);
-void pick_up_fork(t_philo *philo, int id, int fork);
-void put_down_fork(t_philo *philo, int id, int fork);
+void pick_up_fork(t_philo *philo, int id);
+void put_down_fork(t_philo *philo, int id);
 
 t_philo *initialize_philo(int phil_count);
 void i_am_done_eating( t_philo *philo, int philosopher);

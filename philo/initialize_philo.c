@@ -1,9 +1,9 @@
 #include "philo.h"
 
-void init_forks(pthread_mutex_t *forks, int num)
+void init_forks(pthread_mutex_t *forks_lock, int num)
 {
     for (int i = 0; i < num; i++) {
-        if (pthread_mutex_init(&forks[i], NULL) != 0)
+        if (pthread_mutex_init(&forks_lock[i], NULL) != 0)
 		{
             fprintf(stderr, "Error: Failed to initialize fork mutex %d\n", i);
             exit(EXIT_FAILURE) ;
@@ -40,27 +40,16 @@ t_philo *initialize_philo(int phil_count)
 		exit(EXIT_FAILURE);
 	}
 
-	philo->forks = malloc(phil_count * sizeof(pthread_mutex_t) );
-    if (!philo->forks)
+
+
+	philo->forks_lock = malloc(philo->num * sizeof(pthread_mutex_t));
+	if (!philo->forks_lock)
 	{
         fprintf(stderr, "Error: forks malloc failed\n");
         exit(EXIT_FAILURE);
     }
+	init_forks(philo->forks_lock, philo->num);
 
-    init_forks(philo->forks, phil_count); // Initialize fork mutexes
-
-	philo->left_fork_lock = malloc(phil_count * sizeof(pthread_mutex_t *));
-	philo->right_fork_lock = malloc(phil_count * sizeof(pthread_mutex_t *));
-    if (!philo->left_fork_lock || !philo->right_fork_lock) {
-        fprintf(stderr, "Error: fork lock malloc failed\n");
-        exit(EXIT_FAILURE);
-    }
-
-    // Assign left and right forks to each philosopher
-    for (i = 0; i < phil_count; i++) {
-        philo->left_fork_lock[i] = &philo->forks[i];                  // Left fork is the philosopher’s own fork
-        philo->right_fork_lock[i] = &philo->forks[(i + 1) % phil_count]; // Right fork is the next one (circular)
-    }
 
 	// Allocate memory for philosopher condition variables and their queue numbers
 	philo->blocked_philosophers = (pthread_cond_t **) malloc(sizeof(pthread_cond_t *)*philo->num);

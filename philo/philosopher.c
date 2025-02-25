@@ -53,7 +53,8 @@ void *philosopher(void *arg)
 		pthread_mutex_unlock(data->lock);
 
 		// Handle philosopher becoming hungry
-		i_am_hungry(philo, id);
+		if (data->phil_states[id] == 'H')
+			i_am_hungry(philo, id);
 
 
 		// Check if philosopher's state is still hungry (H) and fork state is correct
@@ -90,7 +91,8 @@ void *philosopher(void *arg)
 		usleep(eat * 1000);
 
 		// Notify that the philosopher has finished eating
-		i_am_done_eating(philo, id);
+		if (data->phil_states[id] == 'E')
+			i_am_done_eating(philo, id);
 
 
 		pthread_mutex_lock(data->lock);
