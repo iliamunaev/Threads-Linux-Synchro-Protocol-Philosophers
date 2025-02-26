@@ -1,3 +1,6 @@
+base: https://web.eecs.utk.edu/~jplank/plank/classes/cs360/360/notes/Dphil/lecture.html
+
+
 cc -fsanitize=thread -g
 
 valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./philo 1 800 200 200
@@ -9,4 +12,4 @@ https://nafuka11.github.io/philosophers-visualizer/
 
 timeout 10s
 
-TSAN_OPTIONS="suppressions=suppressions.txt" ./philo 
+TSAN_OPTIONS="suppressions=suppressions.txt" ./philo
