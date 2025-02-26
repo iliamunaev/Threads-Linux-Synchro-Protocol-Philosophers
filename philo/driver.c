@@ -18,10 +18,8 @@ void i_am_hungry(t_philo *philo, int philosopher)
     }
 
     pick_up_fork(philo, philosopher);
-    // pick_up_fork(philo, (philosopher + 1) % philo->num);
+    // // pick_up_fork(philo, (philosopher + 1) % philo->num);
 
-    // Reset philosopher's hunger priority after eating
-    philo->philo_num[philosopher] = EATING - THRESHOLD * philo->num;
 
     pthread_mutex_unlock(philo->lock);
 }
@@ -54,40 +52,73 @@ void i_am_done_eating( t_philo *philo, int philosopher)
 }
 
 // Function to pick up a fork
-void pick_up_fork(t_philo *philo, int id)
+// void pick_up_fork(t_philo *philo, int id)
+// {
+
+//     int left_fork = id;
+//     int right_fork = (id + 1) % philo->num;  // Next fork in circular array
+
+
+// 	// printf("[DEBUG] Philosopher %d is trying to pick up fork %d\n", id, left_fork);
+
+// 	if (pthread_mutex_lock(&philo->forks_lock[left_fork]) != 0)
+// 		return ;
+
+// 	// printf("[DEBUG] Philosopher %d is trying to pick up fork %d\n", id, right_fork);
+
+// 	if (pthread_mutex_lock(&philo->forks_lock[right_fork]) != 0)
+// 	{
+// 		pthread_mutex_unlock(&philo->forks_lock[left_fork]);
+// 		return ;
+// 	}
+
+// 	// printf("[DEBUG] Philosopher %d is picked up forks successfully\n", id);
+
+// }
+void pick_up_fork(t_philo *philo, int philosopher)
 {
-
-    int left_fork = id;
-    int right_fork = (id + 1) % philo->num;  // Next fork in circular array
+    int first_fork, second_fork;
 
 
-	// printf("[DEBUG] Philosopher %d is trying to pick up fork %d\n", id, left_fork);
+    if (philosopher % 2 == 0) {
+        first_fork = philosopher;                  // Even philosophers pick left first
+        second_fork = (philosopher + 1) % philo->num;
+    } else {
+        first_fork = (philosopher + 1) % philo->num; // Odd philosophers pick right first
+        second_fork = philosopher;
+    }
 
-	pthread_mutex_lock(&philo->forks_lock[left_fork]);
 
-	// printf("[DEBUG] Philosopher %d is trying to pick up fork %d\n", id, right_fork);
+    pthread_mutex_lock(&philo->forks_lock[first_fork]);
 
-	pthread_mutex_lock(&philo->forks_lock[right_fork]);
-
-	// printf("[DEBUG] Philosopher %d is picked up forks successfully\n", id);
-
+    pthread_mutex_lock(&philo->forks_lock[second_fork]);
 }
 
 void put_down_fork(t_philo *philo, int id)
 {
-
     int left_fork = id;
-    int right_fork = (id + 1) % philo->num;  // Next fork in circular array
+    int right_fork = (id + 1) % philo->num;
 
-	// printf("[DEBUG] Philosopher %d is trying to put down fork %d\n", id, left_fork);
-
-	pthread_mutex_unlock(&philo->forks_lock[left_fork]);
-
-	// printf("[DEBUG] Philosopher %d is trying to put down fork %d\n", id, right_fork);
-
-	pthread_mutex_unlock(&philo->forks_lock[right_fork]);
-
-	// printf("[DEBUG] Philosopher %d is put down forks successfully\n", id);
-
+    pthread_mutex_unlock(&philo->forks_lock[left_fork]);
+    pthread_mutex_unlock(&philo->forks_lock[right_fork]);
 }
+
+
+// void put_down_fork(t_philo *philo, int id)
+// {
+
+//     int left_fork = id;
+//     int right_fork = (id + 1) % philo->num;  // Next fork in circular array
+
+// 	// printf("[DEBUG] Philosopher %d is trying to put down fork %d\n", id, left_fork);
+
+// 	pthread_mutex_unlock(&philo->forks_lock[left_fork]);
+
+// 	// printf("[DEBUG] Philosopher %d is trying to put down fork %d\n", id, right_fork);
+
+// 	pthread_mutex_unlock(&philo->forks_lock[right_fork]);
+
+// 	// printf("[DEBUG] Philosopher %d is put down forks successfully\n", id);
+
+// }
 

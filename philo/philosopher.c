@@ -78,6 +78,9 @@ void *philosopher(void *arg)
 		data->blocktime[id] += (t - data->start_hungry[id]); // Update the time spent eating
 		pthread_mutex_unlock(data->lock);
 
+		// Reset philosopher's hunger priority after eating
+		philo->philo_num[id] = EATING - THRESHOLD * philo->num;
+
 
 		pthread_mutex_lock(data->lock);
 		int eat = data->time_to_eat;
